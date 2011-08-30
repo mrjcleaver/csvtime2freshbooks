@@ -1,0 +1,6 @@
+This script pushes into Freshbooks time logged in a CSV file
+
+The code isn't elegant but it does work.
+
+Please read the comments at the start of the csvtime2freshbooks.pl file
+
