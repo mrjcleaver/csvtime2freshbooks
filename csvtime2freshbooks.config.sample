@@ -1,0 +1,3 @@
+our $key = '0'; # 'fbfbfbfbfbfbfbfbfbfb0000fbfb'
+our $xml_in='0'; # https://youraccount.freshbooks.com/api/2.1/xml-in';
+1;
