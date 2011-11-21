@@ -4,7 +4,7 @@ use warnings;
 
 # Released under the GPL 3.0 http://www.gnu.org/copyleft/gpl.html
 # By Martin Cleaver http://martin.cleaver.org
-# 31 Aug 2011
+# 21 Nov 2011
 
 # This script puts into Freshbooks time logged from a CSV file
 # I use it with MediaAtelia's TimeLog 4, but it should work with any CSV output
@@ -38,7 +38,19 @@ my $input = $ARGV[0] || die "Pass name of CSV file containing Freshbooks time";
 # In the meantime it's a bit awkward, but you need to do it only once after you've added new project codes.
 # If you get stuck please comment on the thread http://community.freshbooks.com/forums/viewtopic.php?pid=39161 
 #
-# Until FreshBooks adds is a  way in the UI to see the Project and Task codes, you have to use REST to discover them
+# Three choices - 1) greasemonkey 2) view source 3) use a REST client
+# 1) My Greasemonkey Script
+# Install Greasemonkey or Tampermonkey (for Chrome) - see http://userscripts.org/scripts/show/118709
+#
+# 2) View source
+# You can get the project number by going to the project in Freshbooks, Time Tracking, Projects, Project and doing view source.
+# Look for "projectid-" the PP after projectid is the project number. e.g. projectid-38.
+# or you can see all of the projects 
+# You can get the task number by going to Time Tracking -> Tasks -> Task Item -> Edit Task -> View Source. Search for "taskid". The number you want is in the value="tt"
+# e.g. name='taskid' value='10'
+#
+# 3) 
+# Use REST to discover them
 # On my Mac I use RESTClient.app
 # URL=https://blendedperspectives.freshbooks.com/api/2.1/xml-in 
 # Method=POST
@@ -136,7 +148,7 @@ while (my $csv_line = <$fh>) {
     my $task;
     # Get the project code from Timelog, if it has it.
     if (! $csv_line->{'Project'}) {
-	die "No Project column! Aborting!"; # The csv should always have the column, even if it is blank.
+	die "No Project column! Aborting - assuming end of data at line $lineNumber!"; # The csv should always have the column, even if it is blank.
     } else {
 	($project, $task) = getProjectAndTask($csv_line->{'Project'});
     }
@@ -176,10 +188,29 @@ while (my $csv_line = <$fh>) {
 
 close $fh;
 
-
+my ($lateDate, $lastHours, $lastProject, $lastTask, $lastNotes);
 sub logTime {
     my ($date, $hours, $project, $task, $notes) = @_;
     print "\nDATE: $date, $hours, $project, $task, $notes\n";
+
+#    if ($lastProject) {
+#	if ($lastProject eq $project &&
+#	    $lastTask eq $task) {
+
+#	    if ($notes ne "") {
+#		$lastHours 
+#		
+#
+#    ($lateDate, $lastHours, $lastProject, $lastTask, $lastNotes);
+    
+
+    logTimeXML($date, $hours, $project, $task, $notes);
+}
+
+
+sub logTimeXML {
+    my ($date, $hours, $project, $task, $notes) = @_;
+
 my $xml = <<MESSAGE
 
 <request method="time_entry.create">
